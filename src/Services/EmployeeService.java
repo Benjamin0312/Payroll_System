@@ -13,6 +13,7 @@ import Model.Employee;
 import java.util.ArrayList;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import Config.DBConfig;
 
 public class EmployeeService {
     private Connection conn;
@@ -20,7 +21,9 @@ public class EmployeeService {
   public EmployeeService(){
   
   try{
-    conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/payroll_system","root","2003B@njamin");  
+    conn = DriverManager.getConnection(
+    DBConfig.URL,DBConfig.USER,DBConfig.PASSWORD
+    );
     
    }catch(SQLException e){
       e.printStackTrace();
@@ -33,7 +36,6 @@ public class EmployeeService {
         
        PreparedStatement ps=conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
       
-       ps.setString(1,emp.getID());
        ps.setString(2,emp.getName());
        ps.setString(3, emp.getSurname());
        ps.setString(4,emp.getJobTitle());
@@ -59,19 +61,71 @@ public class EmployeeService {
        
     }
     
-    public void deleteEmployee(Employee emp){
+    public boolean deleteEmployee(String employeeID) throws SQLException{
+    String sql="DELETE FROM employees WHERE employee_id=?";
+    
+    PreparedStatement ps=conn.prepareStatement(sql);
+    ps.setString(1,employeeID);
+    
+    int affectedRows=ps.executeUpdate();
+    
+    return affectedRows>0;
+    }
+    
+    public boolean updateEmployee(Employee emp) throws SQLException{
+    String sql = "UPDATE employees SET name=?, surname=?, jobTitle=?, department=? WHERE employee_id=?";
+    PreparedStatement ps = conn.prepareStatement(sql);
+
+    ps.setString(1, emp.getName());
+    ps.setString(2, emp.getSurname());
+    ps.setString(3, emp.getJobTitle());
+    ps.setString(4, emp.getDepartment());
+    ps.setString(5, emp.getID());
+
+    int rowsAffected = ps.executeUpdate();
+    return rowsAffected > 0;
         
     }
     
-    public void updateEmployee(Employee emp){
+    public Employee searchEmployee(String employeeID) throws SQLException{
+    String sql = "SELECT * FROM employees WHERE employee_id = ?";
+    PreparedStatement ps = conn.prepareStatement(sql);
+    ps.setString(1, employeeID);
+
+    ResultSet rs = ps.executeQuery();
+
+    if (rs.next()) {
+        Employee emp = new Employee();
+        emp.setID(rs.getString("employee_id"));
+        emp.setName(rs.getString("name"));
+        emp.setSurname(rs.getString("surname"));
+        emp.setJobTitle(rs.getString("jobTitle"));
+        emp.setDepartment(rs.getString("department"));
+        return emp;
+    }
+
+    return null;
         
     }
     
-    public void searchEmployee(Employee emp){
+    public ArrayList<Employee> getAllEmployees() throws SQLException{
         
-    }
-    
-    public void getAllEmployees(Employee emp){
+        ArrayList<Employee> employees=new ArrayList<>();
+        String sql="SELECT * FROM employees";
+        Statement st=conn.createStatement();
+        ResultSet rs=st.executeQuery(sql);
         
+        while(rs.next()){
+            Employee emp=new Employee();
+          
+            emp.setID(rs.getString("employee_id"));
+            emp.setName(rs.getString("name"));
+            emp.setSurname(rs.getString("surname"));
+            emp.setJobTitle(rs.getString("jobTitle"));
+            emp.setDepartment(rs.getString("department"));
+            employees.add(emp);
+            
+        }
+        return employees;
     }
 }
