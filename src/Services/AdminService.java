@@ -1,85 +1,149 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Services;
+
 import java.sql.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import Config.DBConfig;
-/**
- *
- * @author benji
- */
+
 public class AdminService {
+
     private Connection conn;
-    
-    public AdminService(){
-        try{
-          conn=  DriverManager.getConnection(DBConfig.URL,DBConfig.USER,DBConfig.PASSWORD);
-            
-        }catch(SQLException e){
+
+    public AdminService() {
+        try {
+            conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USER, DBConfig.PASSWORD);
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-    
-      private String hashPassword(String password){
-        try{
-            MessageDigest md= MessageDigest.getInstance("SHA-256");
-            byte[] hashedBytes= md.digest(password.getBytes());
-            
-            StringBuilder sb= new StringBuilder();
-            for(byte b:hashedBytes){
-                sb.append(String.format("%02x",b));
-            }
-            return sb.toString();
-        }catch(NoSuchAlgorithmException e){
-            throw new RuntimeException("Hashing algorithm not found");
-    
-        }
-      }
-    
-    public boolean adminExist()throws SQLException{
-        String sql= "SELECT COUNT(* FROM admins";
-        Statement st=conn.createStatement();
-        ResultSet rs=st.executeQuery(sql);
-        
-        if(rs.next()){
-            return rs.getInt(1)>0;
-        }
-        return false;
-    }
-    
-    public void createDefaultAdmin() throws SQLException{
-        String userName="admin";
-        String password="admin123";
-        
-        String hashedPassword=hashPassword(password);
-        
-        String sql="INSERT INTO admins(username,password_hash) VALUES(?,?)";
-        PreparedStatement ps=conn.prepareStatement(sql);
-    
-    ps.setString(1,userName);
-    ps.setString(2,password);
-    ps.executeUpdate();
-    }
-    
-    public boolean authenticate(String username,String password) throws SQLException{
-        String sql= "SELECT password_hash FROM admins WHERE username=?";
-        PreparedStatement ps= conn.prepareStatement(sql);
-    ps.setString(1, username);
-    
-    ResultSet rs=ps.executeQuery();
-    
-    if(rs.next()){
-        
-        String storedHash= rs.getString("password_hash");
-        String inputHash= hashPassword(password);
-        return storedHash.equals(inputHash);
-    }
-    return false;
-    }
-    
-  
 
+    /* ===================== SECURITY ===================== */
+    private String hashPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] bytes = md.digest(password.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : bytes) sb.append(String.format("%02x", b));
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Hashing algorithm not found");
+        }
+    }
+
+    
+    public boolean adminExists() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM admins";
+        try (Statement st = conn.createStatement(); 
+            ResultSet rs = st.executeQuery(sql)) {
+            rs.next();
+            return rs.getInt(1) > 0;
+        }
+    }
+
+    public void createBootstrapAdmin() throws SQLException {
+        if (adminExists()) return;
+
+        String username = "admin";
+        String bootstrapPassword = "admin@123";
+
+        String sql = "INSERT INTO admins (username, password_hash, must_reset_password) VALUES (?, ?, true)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ps.setString(2, hashPassword(bootstrapPassword));
+            ps.executeUpdate();
+        }
+    }
+
+
+    public enum AdminLoginResult {
+        INVALID,
+        MUST_RESET,
+        SUCCESS }
+
+    public AdminLoginResult authenticate(String username, String password) throws SQLException {
+        
+        String sql = "SELECT password_hash, reset_password FROM admins WHERE username = ?";
+        
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next()) return AdminLoginResult.INVALID;
+
+            String storedHash = rs.getString("password_hash");
+            boolean mustReset = rs.getBoolean("reset_password");
+
+            if (!storedHash.equals(hashPassword(password))) return AdminLoginResult.INVALID;
+
+            return mustReset ? AdminLoginResult.MUST_RESET : AdminLoginResult.SUCCESS;
+        }
+    }
+
+   
+    public void resetPassword(String username, String newPassword) throws SQLException {
+        String sql = "UPDATE admins SET password_hash = ?, must_reset_password = false WHERE username = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, hashPassword(newPassword));
+            ps.setString(2, username);
+            ps.executeUpdate();
+        }
+    }
+
+    public void changePassword(String username, String oldPassword, String newPassword) throws SQLException {
+        if (authenticate(username, oldPassword) != AdminLoginResult.SUCCESS) {
+            throw new IllegalArgumentException("Old password is incorrect");
+        }
+        resetPassword(username, newPassword);
+    }
+
+
+    private String generateUsername(String name) {
+        return name.toLowerCase().replaceAll("\\s+", "") + ".admin";
+    }
+
+    public void registerAdmin(String name, String password) throws SQLException {
+        String username = generateUsername(name);
+
+        String sql = "INSERT INTO admins(username, password_hash, reset_password) VALUES (?, ?, false)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ps.setString(2, hashPassword(password));
+            ps.executeUpdate();
+        }
+    }
+
+    public boolean deleteAdmin(String username) throws SQLException {
+        String sql = "DELETE FROM admins WHERE username = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    public List<String> getAllAdmins() throws SQLException {
+        List<String> admins = new ArrayList<>();
+        String sql = "SELECT username FROM admins";
+        try (Statement st = conn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) admins.add(rs.getString("username"));
+        }
+        return admins;
+    }
+
+    public void completeFirstLogin(String name, String newPassword) throws SQLException {
+        String username = generateUsername(name);
+
+        String sql = """
+            UPDATE admins
+            SET username = ?, password_hash = ?, reset_password = false
+            WHERE reset_password = true
+            LIMIT 1
+        """;
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ps.setString(2, hashPassword(newPassword));
+            ps.executeUpdate();
+        }
+    }
 }
