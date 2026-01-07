@@ -29,25 +29,28 @@ public class EmployeeService {
       e.printStackTrace();
     }
   }
-    
-    public void addEmployee(Employee emp) throws SQLException{
+    public void registerEmployee(Employee emp) throws SQLException{
       
-  String sql ="INSERT INTO employees(name,surname,jobTitle, department) VALUES(?,?,?,?)";
+  String sql ="INSERT INTO employees(name,surname,jobTitle, department,password) VALUES(?,?,?,?,?)";
         
        PreparedStatement ps=conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
       
-       ps.setString(2,emp.getName());
-       ps.setString(3, emp.getSurname());
-       ps.setString(4,emp.getJobTitle());
-       ps.setString(5,emp.getDepartment());
+       ps.setString(1,emp.getName());
+       ps.setString(2, emp.getSurname());
+       ps.setString(3,emp.getJobTitle());
+       ps.setString(4,emp.getDepartment());
+       ps.setString(5,emp.getPassword());
        ps.executeUpdate();
        
        ResultSet rs=ps.getGeneratedKeys();
        
-       int id = 0;
-       if(rs.next()){
-           id=rs.getInt(1);
+      // int id = 0;
+       if(!rs.next()){
+           //id=rs.getInt(1);
+           throw new SQLException("Failed to generate employeeID");
        }
+       
+       int id=rs.getInt(1);
        
        String employeeCode="EMP"+String.format("%04d", id);
         
@@ -60,8 +63,9 @@ public class EmployeeService {
        
        
     }
-    
-    public boolean deleteEmployee(String employeeID) throws SQLException{
+  
+   
+    public int deleteEmployee(String employeeID) throws SQLException{
     String sql="DELETE FROM employees WHERE employee_id=?";
     
     PreparedStatement ps=conn.prepareStatement(sql);
@@ -69,23 +73,10 @@ public class EmployeeService {
     
     int affectedRows=ps.executeUpdate();
     
-    return affectedRows>0;
+    return affectedRows;
     }
     
-    public boolean updateEmployee(Employee emp) throws SQLException{
-    String sql = "UPDATE employees SET name=?, surname=?, jobTitle=?, department=? WHERE employee_id=?";
-    PreparedStatement ps = conn.prepareStatement(sql);
 
-    ps.setString(1, emp.getName());
-    ps.setString(2, emp.getSurname());
-    ps.setString(3, emp.getJobTitle());
-    ps.setString(4, emp.getDepartment());
-    ps.setString(5, emp.getID());
-
-    int rowsAffected = ps.executeUpdate();
-    return rowsAffected > 0;
-        
-    }
     
     public Employee searchEmployee(String employeeID) throws SQLException{
     String sql = "SELECT * FROM employees WHERE employee_id = ?";
@@ -128,4 +119,64 @@ public class EmployeeService {
         }
         return employees;
     }
+    
+    public Employee login(String username, String password) throws SQLException {
+    String sql = "SELECT * FROM employees WHERE employee_id=? AND password=?";
+    PreparedStatement ps = conn.prepareStatement(sql);
+    
+    ps.setString(1, username);
+    ps.setString(2, password);
+
+    ResultSet rs = ps.executeQuery();
+
+    if (rs.next()) {
+        Employee emp = new Employee();
+        emp.setID(rs.getString("employee_id"));
+        emp.setName(rs.getString("name"));
+   
+        return emp;
+    }
+    return null;
+}
+    
+    public String createPassword(String name,String surname){
+        
+        
+        return name+surname.toLowerCase();
+    }
+    
+public void changePassword(String employeeId, String oldPassword, String newPassword) throws SQLException {
+
+ 
+    String checkSql = "SELECT password FROM employees WHERE employee_id = ?";
+    PreparedStatement checkPs = conn.prepareStatement(checkSql);
+    checkPs.setString(1, employeeId);
+
+    ResultSet rs = checkPs.executeQuery();
+
+    if (!rs.next()) {
+        throw new SQLException("Employee not found");
+    }
+
+    String storedPassword = rs.getString("password");
+
+   
+    if (!storedPassword.equals(oldPassword)) {
+        throw new SQLException("Current password is incorrect");
+    }
+
+  
+    String updateSql = "UPDATE employees SET password = ? WHERE employee_id = ?";
+    PreparedStatement updatePs = conn.prepareStatement(updateSql);
+    
+    AdminService adminService=new AdminService();
+    
+    String hashedNewPassword=adminService.hashPassword(newPassword);
+    updatePs.setString(1, hashedNewPassword); 
+    updatePs.setString(2, employeeId);
+
+    updatePs.executeUpdate();
+}
+
+
 }

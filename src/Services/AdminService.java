@@ -19,8 +19,8 @@ public class AdminService {
         }
     }
 
-    /* ===================== SECURITY ===================== */
-    private String hashPassword(String password) {
+    
+    public String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] bytes = md.digest(password.getBytes());
@@ -64,7 +64,7 @@ public class AdminService {
 
     public AdminLoginResult authenticate(String username, String password) throws SQLException {
         
-        String sql = "SELECT password_hash, reset_password FROM admins WHERE username = ?";
+        String sql = "SELECT password_hash, must_reset_password FROM admins WHERE username = ?";
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, username);
@@ -72,7 +72,7 @@ public class AdminService {
             if (!rs.next()) return AdminLoginResult.INVALID;
 
             String storedHash = rs.getString("password_hash");
-            boolean mustReset = rs.getBoolean("reset_password");
+            boolean mustReset = rs.getBoolean("must_reset_password");
 
             if (!storedHash.equals(hashPassword(password))) return AdminLoginResult.INVALID;
 
@@ -91,21 +91,23 @@ public class AdminService {
     }
 
     public void changePassword(String username, String oldPassword, String newPassword) throws SQLException {
-        if (authenticate(username, oldPassword) != AdminLoginResult.SUCCESS) {
-            throw new IllegalArgumentException("Old password is incorrect");
-        }
+    AdminLoginResult result = authenticate(username, oldPassword);
+if (result == AdminLoginResult.INVALID) {
+    throw new IllegalArgumentException("Old password is incorrect");
+}
+
         resetPassword(username, newPassword);
     }
-
-
+    
+ 
     private String generateUsername(String name) {
-        return name.toLowerCase().replaceAll("\\s+", "") + ".admin";
+        return name.toLowerCase().replaceAll("\\s+", "") + "@admin";
     }
 
     public void registerAdmin(String name, String password) throws SQLException {
         String username = generateUsername(name);
 
-        String sql = "INSERT INTO admins(username, password_hash, reset_password) VALUES (?, ?, false)";
+        String sql = "INSERT INTO admins(username, password_hash,must_reset_password) VALUES (?, ?, false)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, username);
             ps.setString(2, hashPassword(password));
@@ -113,11 +115,13 @@ public class AdminService {
         }
     }
 
-    public boolean deleteAdmin(String username) throws SQLException {
+    public int deleteAdmin(String username) throws SQLException {
         String sql = "DELETE FROM admins WHERE username = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, username);
-            return ps.executeUpdate() > 0;
+            
+            
+            return ps.executeUpdate();
         }
     }
 
@@ -130,20 +134,64 @@ public class AdminService {
         return admins;
     }
 
-    public void completeFirstLogin(String name, String newPassword) throws SQLException {
-        String username = generateUsername(name);
 
-        String sql = """
-            UPDATE admins
-            SET username = ?, password_hash = ?, reset_password = false
-            WHERE reset_password = true
-            LIMIT 1
-        """;
+  public void completeFirstLogin(String bootstrapUsername, String name, String newPassword)throws SQLException {
 
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, username);
-            ps.setString(2, hashPassword(newPassword));
-            ps.executeUpdate();
-        }
+    String newUsername = generateUsername(name);
+
+    String sql = """
+        UPDATE admins
+        SET username = ?, password_hash = ?, must_reset_password = false
+        WHERE username = ?
+    """;
+
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, newUsername);
+        ps.setString(2, hashPassword(newPassword));
+        ps.setString(3, bootstrapUsername);
+        ps.executeUpdate();
     }
+}
+
+    
+    
+   public void addJobRole(String roleName,String department,double hourlyRate,double overtimeRate) throws SQLException {
+
+    
+    String sql = """
+        INSERT INTO job_roles (role_name, department, hourly_rate, overtime_rate)
+        VALUES (?, ?, ?, ?)
+    """;
+
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, roleName);
+        ps.setString(2, department);
+        ps.setDouble(3, hourlyRate);
+        ps.setDouble(4, overtimeRate);
+        ps.executeUpdate();
+    }
+}
+
+public boolean jobRoleExistCheck(String roleName, String department) throws SQLException {
+
+    String sql = """
+        SELECT COUNT(*)
+        FROM job_roles
+        WHERE role_name = ?
+          AND department = ?
+    """;
+
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, roleName);
+        ps.setString(2, department);
+
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+
+        return rs.getInt(1) > 0;
+    }
+}
+
+    
+  
 }

@@ -9,35 +9,49 @@ package Model;
  * @author benji
  */
 public class Employee {
-String ID;
-String name; 
-String surname;
-String jobTitle;
-String department;
-double hoursWorked;
-double overtimeHours;
+private String employee_id;
+private String name; 
+private String surname;
+private String jobTitle;
+private String department;
+private String password;
+
 
 
 public Employee(){}
 
-public Employee(String ID,String name,String surname,String jobTitle,String department,double hoursWorked,double overtimeHours){
-this.ID=ID;
+public Employee(String employee_id,String name,String surname,String jobTitle,String department,String password){
+this.employee_id=employee_id;
 this.name=name;
 this.surname=surname;
 this.jobTitle=jobTitle;
 this.department=department;
-this.hoursWorked=hoursWorked;
-this.overtimeHours=overtimeHours;
-
+this.password=password;
 }
+
+    public String getEmployee_id() {
+        return employee_id;
+    }
+
+    public void setEmployee_id(String employee_id) {
+        this.employee_id = employee_id;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
 
     public String getID() {
-        return ID;
+        return employee_id;
     }
 
     public void setID(String ID) {
-        this.ID = ID;
+        this.employee_id = ID;
     }
 
     public String getName() {
@@ -72,31 +86,14 @@ this.overtimeHours=overtimeHours;
         this.department = department;
     }
 
-    public double getHoursWorked() {
-        return hoursWorked;
-    }
-
-    public void setHoursWorked(double hoursWorked) {
-        this.hoursWorked = hoursWorked;
-    }
-
-    public double getOvertimeHours() {
-        return overtimeHours;
-    }
-
-    public void setOvertimeHours(double overtimeHours) {
-        this.overtimeHours = overtimeHours;
-    }
     
     
 public String toString(){
-return "=====Employee Details======="
-        +"Name:"+name
-        +"Surname:"+surname
-        +"Job Title:"+jobTitle
-        +"Department:"+department
-        +"Hours Worked:"+hoursWorked
-        +"Overtime:"+overtimeHours;
+ return "===== Employee Details =====\n"
+     + "ID: " + employee_id + "\n"
+     + "Name: " + name + " " + surname + "\n"
+     + "Job Title: " + jobTitle + "\n"
+     + "Department: " + department;
 
 
 }
