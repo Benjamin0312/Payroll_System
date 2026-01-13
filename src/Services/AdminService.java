@@ -31,6 +31,20 @@ public class AdminService {
             throw new RuntimeException("Hashing algorithm not found");
         }
     }
+    
+public boolean adminLogin(String username, String password) throws SQLException {
+
+    String sql = "SELECT password_hash FROM admins WHERE username=?";
+    PreparedStatement ps = conn.prepareStatement(sql);
+    ps.setString(1, username);
+
+    ResultSet rs = ps.executeQuery();
+
+    if (!rs.next()) return false;
+
+    return rs.getString("password_hash")
+             .equals(hashPassword(password));
+}
 
     
     public boolean adminExists() throws SQLException {
