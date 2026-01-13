@@ -23,6 +23,7 @@ import org.apache.pdfbox.util.Matrix;
 import java.io.IOException;
 import java.time.LocalDate;
 
+
 /**
  *
  * @author benji
@@ -62,7 +63,7 @@ public List<JobRole> getAllJobRoles() throws SQLException{
              
              while(rs.next()){
                  roles.add(new JobRole(
-                 rs.getInt("role_id"),
+                 rs.getInt("id"),
                  rs.getString("role_name"),
                  rs.getString("department"),
                  rs.getDouble("hourly_rate"),
@@ -73,25 +74,22 @@ public List<JobRole> getAllJobRoles() throws SQLException{
          return roles;
      }
 
-public JobRole  getJobRoleRates(String roleName,String department)throws SQLException{
-    String sql="SELECT hourly_rate,overtime_rate FROM job_roles WHERE role_name=? AND department=?";
+public JobRole  getJobRoleRates(int jobRoleId)throws SQLException{
+    String sql="SELECT id,hourly_rate,overtime_rate FROM job_roles WHERE id=?";
+    
    
     PreparedStatement ps=conn.prepareStatement(sql);
-    ps.setString(1,roleName);
-    ps.setString(2,department);
+    ps.setInt(1,jobRoleId);
     
     ResultSet rs=ps.executeQuery();
     
     if(rs.next()){
         JobRole role=new JobRole();
         
-        role.setRoleName(roleName);
-        role.setDepartment(department);
-        
+        role.setJobRoleId(rs.getInt("id"));
         role.setHourlyRate(rs.getDouble("hourly_rate"));
         role.setOvertimeRate(rs.getDouble("overtime_rate"));
-        
-        
+       
         return role;
     }
     
@@ -173,10 +171,11 @@ public double netPay(JobRole jobRole,Payroll payroll){
 }
 
 
-     public boolean savePayroll(Employee emp, Payroll payroll, String payPeriod,JobRole jobRole) throws SQLException {
+public boolean savePayroll(Employee emp, Payroll payroll, String payPeriod,JobRole jobRole) throws SQLException {
 
         String sql = """
-            INSERT INTO payroll (
+                     
+            INSERT INTO payroll(
                 employee_id, pay_period, hours_worked, overtime_hours,
                 basic_salary, overtime_pay, tax, uif, net_pay
             ) VALUES (?,?,?,?,?,?,?,?,?)
@@ -185,9 +184,9 @@ public double netPay(JobRole jobRole,Payroll payroll){
         PreparedStatement ps = conn.prepareStatement(sql);
 
         ps.setString(1, emp.getID());
-        ps.setDouble(2, payroll.getHoursWorked());
-        ps.setDouble(3, payroll.getOvertimeHours());
-        ps.setString(4, payPeriod);
+        ps.setString(2, payPeriod);
+        ps.setDouble(3, payroll.getHoursWorked());
+        ps.setDouble(4, payroll.getOvertimeHours());
         ps.setDouble(5, basicSalary(jobRole,payroll));
         ps.setDouble(6, overtimePay(jobRole,payroll));
         ps.setDouble(7, taxDeduction(jobRole,payroll));
@@ -198,14 +197,16 @@ public double netPay(JobRole jobRole,Payroll payroll){
     }
 
 
-public void generatePayslip(Employee employee,CompanyInfo companyInfo,JobRole jobRole,Payroll payroll){
+public void generatePayslip(Employee employee,JobRole jobRole,Payroll payroll){
     
     LocalDate currentDate=LocalDate.now();
+   
+   CompanyServices  service=new CompanyServices();
     
-    RegisterEmployee registerEmployee=new RegisterEmployee();
+    try{
+          CompanyInfo companyInfo = service.getCompanyInfo();
     
-    
-    
+
        ///Create a an PDDocumnet object which will be used for creating a pdf document
       try (PDDocument document=new PDDocument()) {
           ///creating single page on the pdf document 
@@ -271,88 +272,94 @@ public void generatePayslip(Employee employee,CompanyInfo companyInfo,JobRole jo
          cs.endText();
          
          cs.beginText();
+         cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA),13);
+         cs.newLineAtOffset(50,720);
+         cs.showText("Registration Number:"+companyInfo.getRegistrationNumber()+"                                        TAX Number:"+companyInfo.getTaxNumber());
+         cs.endText();
+      
+         cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA),33);
-         cs.newLineAtOffset(50,710);
+         cs.newLineAtOffset(50,690);
          cs.showText("---------------------------------------------");
          cs.endText();
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA),20);
-         cs.newLineAtOffset(250, 690);
+         cs.newLineAtOffset(250, 660);
          cs.showText("PAYSLIP");
          cs.endText();
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 33);
-         cs.newLineAtOffset(50, 670);
+         cs.newLineAtOffset(50, 630);
          cs.showText("---------------------------------------------");
          cs.endText();
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
-         cs.newLineAtOffset(50, 650);
+         cs.newLineAtOffset(50, 600);
                        //////getting the employee id                             getting month from the current date object and setting it as payment period
-         cs.showText("Employee ID:emp"+employee.getID()+"                                                             Payment Period: "+currentDate.getMonth());
+         cs.showText("Employee ID:"+employee.getID()+"                                                                Payment Period: "+currentDate.getMonth());
          cs.endText();
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
-         cs.newLineAtOffset(50, 630);
+         cs.newLineAtOffset(50, 620);
          ////               getting employee name                                                               getting current date 
-         cs.showText("Employee Name:"+employee.getName()+"                                                                  Date: "+currentDate);
+         cs.showText("Employee Name:"+employee.getName()+"                                                              Date: "+currentDate);
          cs.endText(); 
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
-         cs.newLineAtOffset(50, 610);
+         cs.newLineAtOffset(50, 590);
           ////////////////employee's surname'
          cs.showText("Employee Surname: "+employee.getSurname());
          cs.endText();
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
-         cs.newLineAtOffset(50, 590);
-         ///////////////employee's job position'
-         cs.showText("Position: "+employee.getJobTitle()+ "                                                                  Department:"+registerEmployee.getDepartment());                                                       
+         cs.newLineAtOffset(50, 570);
+         ///////////////employee's job position'                                                                           Department:"+registerEmployee.getDepartment()
+         cs.showText("Position: "+employee.getJobTitle()+ "                                                          Department:"+employee.getDepartment());                                                       
          cs.endText();
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 33);
-         cs.newLineAtOffset(50, 560);
+         cs.newLineAtOffset(50, 540);
          cs.showText("---------------------------------------------");
          cs.endText();
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 20);
-         cs.newLineAtOffset(250, 540);
+         cs.newLineAtOffset(250, 510);
          ////   header for toatal employee's earnings
          cs.showText("Earnings");
          cs.endText();
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 33);
-         cs.newLineAtOffset(50, 520);
+         cs.newLineAtOffset(50, 480);
          cs.showText("---------------------------------------------");
          cs.endText();
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
-         cs.newLineAtOffset(50, 500);
-                       /////normal hours worked by the employee                                                overtime hours worked by the employee
-         cs.showText("Normal worked hours: "+payroll.getHoursWorked()+"                                                Overtime Hours: "+payroll.getOvertimeHours());
+         cs.newLineAtOffset(50, 460);
+                       ////hours worked by the employee                                                         overtime hours worked by the employee
+         cs.showText("Worked hours: "+payroll.getHoursWorked()+"                                                                    Overtime Hours: "+payroll.getOvertimeHours());
          cs.endText();
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
-         cs.newLineAtOffset(50, 480);
+         cs.newLineAtOffset(50, 440);
                // getting the employee's base salary                                                                       employee's pay from overtime work
-         cs.showText("Base Pay:R"+netPay(jobRole,payroll)+"                                                               Overtime Pay:R"+overtimePay(jobRole,payroll));
+         cs.showText("Base Pay:R"+netPay(jobRole,payroll)+"                                                                          Overtime Pay:R"+overtimePay(jobRole,payroll));
        //  cs.showText("Netpay:R"+salaryCal.calculateNormalPay(this));
          cs.endText(); 
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
-         cs.newLineAtOffset(50, 460);
+         cs.newLineAtOffset(50, 420);
          ///an if statement for a bonus payment if its end of the year ussually at november hence it we set it on november using the current date object
          if(currentDate.getMonthValue()==11){
          
@@ -367,7 +374,7 @@ public void generatePayslip(Employee employee,CompanyInfo companyInfo,JobRole jo
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
-         cs.newLineAtOffset(50,440);
+         cs.newLineAtOffset(50,400);
          ///cs.showText("Total Before deductions:R"+getNetpay());
          ////toatl payment before deductions which is the addition of normal work time payment and overtime payment
          cs.showText("Total Before Dedections:R"+netPay(jobRole,payroll));
@@ -375,33 +382,33 @@ public void generatePayslip(Employee employee,CompanyInfo companyInfo,JobRole jo
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 33);
-         cs.newLineAtOffset(50,420);
+         cs.newLineAtOffset(50,370);
          cs.showText("---------------------------------------------");
          cs.endText();
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 20);
-         cs.newLineAtOffset(250,400);
+         cs.newLineAtOffset(250,340);
          ///deductions header
          cs.showText("Deductions");
          cs.endText();
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 33);
-         cs.newLineAtOffset(50,380);
+         cs.newLineAtOffset(50,310);
          cs.showText("---------------------------------------------");
          cs.endText();
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
-         cs.newLineAtOffset(50, 360);
+         cs.newLineAtOffset(50, 280);
          ////tax deductions 
          cs.showText("TAX:R"+taxDeduction(jobRole,payroll));
          cs.endText();
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
-         cs.newLineAtOffset(50,340);
+         cs.newLineAtOffset(50,260);
          ///UIF deductions
         /// double pension=getNetpay();
          cs.showText("UIF Pension:R"+UIFDeduction(jobRole,payroll));
@@ -410,69 +417,70 @@ public void generatePayslip(Employee employee,CompanyInfo companyInfo,JobRole jo
      
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
-         cs.newLineAtOffset(50,320);
+         cs.newLineAtOffset(50,240);
          
          cs.showText("Total Deductions:R"+totalDeductions(jobRole,payroll));
          cs.endText();
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 33);
-         cs.newLineAtOffset(50, 300);
+         cs.newLineAtOffset(50, 220);
          cs.showText("---------------------------------------------");
          cs.endText();
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 20);
-         cs.newLineAtOffset(250, 280);
+         cs.newLineAtOffset(250, 200);
           //// the payment that the user will receive after all deductions have been applied to their net pay
          cs.showText("Net Pay:R"+netPay(jobRole,payroll));
          cs.endText();
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 33);
-         cs.newLineAtOffset(50, 260);
+         cs.newLineAtOffset(50, 170);
          cs.showText("---------------------------------------------");
          cs.endText();
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.COURIER_OBLIQUE),12);
-         cs.newLineAtOffset(50, 230);
+         cs.newLineAtOffset(50, 150);
          ////a Disclaimer
          cs.showText("DISCLAIMER:This is a computer generated payslip and while great effort  ");
          cs.endText();
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.COURIER_OBLIQUE),12);
-         cs.newLineAtOffset(50,220);
+         cs.newLineAtOffset(50,140);
          cs.showText("has been made to ensure accuracy,Computer errors out ");
          cs.endText();
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.COURIER_OBLIQUE),12);
-         cs.newLineAtOffset(50,210);
+         cs.newLineAtOffset(50,130);
          cs.showText("of our control might occur which might result in Figures that are not");
          cs.endText();
    
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.COURIER_OBLIQUE),12);           
-         cs.newLineAtOffset(50,200);   
+         cs.newLineAtOffset(50,120);   
          cs.showText("reflected in your bank Account.Please consult with your HR should such happen");
          cs.endText();
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.COURIER_OBLIQUE),12);           
-         cs.newLineAtOffset(50,190);   
+         cs.newLineAtOffset(50,110);   
          cs.showText("as "+companyInfo.getCompanyName().toUpperCase()+" will not be held accountable for any incorrect figgures");
          cs.endText();
          
          cs.beginText();
          cs.setFont(new PDType1Font(Standard14Fonts.FontName.COURIER_OBLIQUE),12);           
-         cs.newLineAtOffset(50,180);   
+         cs.newLineAtOffset(50,100);   
          cs.showText("neither can any claims be made based on the values shown");
          cs.endText();
          
       
 }
+    
       
 
     document.save(employee.getName().toLowerCase()+"Payslip.pdf");
@@ -481,7 +489,10 @@ public void generatePayslip(Employee employee,CompanyInfo companyInfo,JobRole jo
     JOptionPane.showMessageDialog(null,"Pay slip succesfully generated");
 } catch (IOException e) {
    JOptionPane.showMessageDialog(null,"Database error:"+e.getMessage());
-} 
+}
+      }catch(SQLException e){
+        JOptionPane.showMessageDialog(null,e.getMessage());
+    }
     
 }
     
