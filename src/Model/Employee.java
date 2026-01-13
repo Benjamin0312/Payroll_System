@@ -15,20 +15,31 @@ private String surname;
 private String jobTitle;
 private String department;
 private String password;
+private int jobRoleId;
+
+
 
 
 
 public Employee(){}
 
-public Employee(String employee_id,String name,String surname,String jobTitle,String department,String password){
+public Employee(String employee_id,String name,String surname,String jobTitle,String department,String password,int jobRoleId){
 this.employee_id=employee_id;
 this.name=name;
 this.surname=surname;
 this.jobTitle=jobTitle;
 this.department=department;
 this.password=password;
+this.jobRoleId=jobRoleId;
 }
 
+public void setJobRoleId(int jobRoleId){
+    this.jobRoleId=jobRoleId;
+    
+}
+public int getJobRoleId(){
+   return jobRoleId;
+}
     public String getEmployee_id() {
         return employee_id;
     }
