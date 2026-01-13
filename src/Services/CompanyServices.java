@@ -24,6 +24,28 @@ public class CompanyServices {
             e.printStackTrace();
         }
     }
+        
+public CompanyInfo getCompanyInfo() throws SQLException{
+
+    String sql = "SELECT company_name, company_code, tax_number, registration_number " +
+                 "FROM company_info LIMIT 1";
+
+    PreparedStatement ps = conn.prepareStatement(sql);
+    ResultSet rs = ps.executeQuery();
+
+    CompanyInfo companyInfo = null;
+
+    if (rs.next()) {
+        companyInfo = new CompanyInfo();
+        companyInfo.setCompanyName(rs.getString("company_name"));
+        companyInfo.setCompanyCode(rs.getString("company_code"));
+        companyInfo.setTaxNumber(rs.getString("tax_number"));
+        companyInfo.setRegistrationNumber(rs.getString("registration_number"));
+    }
+
+    return companyInfo;
+}
+        
     
     
 
