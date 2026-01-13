@@ -3,8 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package UI;
-import Services.*;
-import Model.*;
 
 /**
  *
@@ -28,30 +26,40 @@ public class AdminDashboard extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton6 = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
-        exitButton = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        viewEmployeeList = new javax.swing.JButton();
+        CompanySettings = new javax.swing.JButton();
+        viewAdminList = new javax.swing.JButton();
         registerEmployee = new javax.swing.JButton();
         deleteEmployee = new javax.swing.JButton();
-        viewAllAdmins = new javax.swing.JButton();
-        viewAllEmployees = new javax.swing.JButton();
-        registerAdmin = new javax.swing.JButton();
         deleteAdmin = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        deleteAdmin1 = new javax.swing.JButton();
-
-        jButton6.setText("Register Admin");
+        registerAdmin = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
+        payslipHistory = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel3.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        jLabel3.setText("ADMIN DASHBOARD");
+        jLabel1.setFont(new java.awt.Font("DialogInput", 1, 36)); // NOI18N
+        jLabel1.setText("ADMIN DASHBOARD");
 
-        exitButton.setText("EXIT");
-        exitButton.addActionListener(new java.awt.event.ActionListener() {
+        viewEmployeeList.setText("VIiew All Employees");
+        viewEmployeeList.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exitButtonActionPerformed(evt);
+                viewEmployeeListActionPerformed(evt);
+            }
+        });
+
+        CompanySettings.setText("Company Settings");
+        CompanySettings.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CompanySettingsActionPerformed(evt);
+            }
+        });
+
+        viewAdminList.setText("View All Admins");
+        viewAdminList.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewAdminListActionPerformed(evt);
             }
         });
 
@@ -63,88 +71,179 @@ public class AdminDashboard extends javax.swing.JFrame {
         });
 
         deleteEmployee.setText("Delete Employee");
+        deleteEmployee.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteEmployeeActionPerformed(evt);
+            }
+        });
 
-        viewAllAdmins.setText("View All Admins");
-
-        viewAllEmployees.setText("View All Employees");
+        deleteAdmin.setText("Delete Admin");
+        deleteAdmin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteAdminActionPerformed(evt);
+            }
+        });
 
         registerAdmin.setText("Register Admin");
+        registerAdmin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                registerAdminActionPerformed(evt);
+            }
+        });
 
-        deleteAdmin.setText("EDIT COMPANY");
+        jButton1.setText("LOG OUT");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
-
-        deleteAdmin1.setText("Delete Admin");
+        payslipHistory.setText("Payslip History");
+        payslipHistory.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                payslipHistoryActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(29, 29, 29)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
+                        .addGap(40, 40, 40)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(registerEmployee, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(deleteEmployee, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(viewEmployeeList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(payslipHistory, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(viewAllEmployees, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(registerEmployee, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(deleteEmployee, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(registerAdmin, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
-                                .addComponent(viewAllAdmins, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(exitButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(deleteAdmin1, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(deleteAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 352, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(150, 150, 150)
-                        .addComponent(jLabel3)))
-                .addContainerGap(24, Short.MAX_VALUE))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(registerAdmin, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(deleteAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(CompanySettings, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(viewAdminList, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addContainerGap(69, Short.MAX_VALUE)
+                        .addComponent(jLabel1)))
+                .addGap(77, 77, 77))
         );
+
+        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {CompanySettings, deleteAdmin, deleteEmployee, registerAdmin, registerEmployee, viewAdminList, viewEmployeeList});
+
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(23, 23, 23)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(39, 39, 39)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(registerEmployee, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(registerEmployee)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(viewAllEmployees, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(deleteEmployee)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(deleteEmployee, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(registerAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(viewEmployeeList, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(viewAllAdmins, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(deleteAdmin1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
-                        .addComponent(deleteAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(exitButton, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(payslipHistory, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addComponent(registerAdmin)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(deleteAdmin)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(viewAdminList)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(CompanySettings, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 114, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addContainerGap(13, Short.MAX_VALUE))
         );
+
+        layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {CompanySettings, deleteAdmin, deleteEmployee, registerAdmin, registerEmployee, viewAdminList, viewEmployeeList});
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
+    private void deleteEmployeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteEmployeeActionPerformed
         // TODO add your handling code here:
-        System.exit(1);
-    }//GEN-LAST:event_exitButtonActionPerformed
+        DeleteEmployee deleteEmployee=new DeleteEmployee();
+        
+        deleteEmployee.setVisible(true);
+        this.dispose();
+        
+    }//GEN-LAST:event_deleteEmployeeActionPerformed
+
+    private void CompanySettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CompanySettingsActionPerformed
+        // TODO add your handling code here:
+        JobRoleSettings companySettings=new JobRoleSettings();
+        companySettings.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_CompanySettingsActionPerformed
+
+    private void registerAdminActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerAdminActionPerformed
+        // TODO add your handling code here:
+        
+        RegisterAdmin registerAdmin=new RegisterAdmin();
+             registerAdmin.setVisible(true);
+             this.dispose();
+    
+    }//GEN-LAST:event_registerAdminActionPerformed
 
     private void registerEmployeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerEmployeeActionPerformed
         // TODO add your handling code here:
-
         
+        RegisterEmployee registeremployee=new RegisterEmployee();
+        
+        registeremployee.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_registerEmployeeActionPerformed
+
+    private void viewEmployeeListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewEmployeeListActionPerformed
+        // TODO add your handling code here:
+        ViewEmployeeList viewEmployeeList=new ViewEmployeeList();
+        
+        viewEmployeeList.setVisible(true);
+        //this.dispose();
+        
+        
+    }//GEN-LAST:event_viewEmployeeListActionPerformed
+
+    private void deleteAdminActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteAdminActionPerformed
+        // TODO add your handling code here:
+        DeleteAdmin deleteAdmin=new DeleteAdmin();
+        deleteAdmin.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_deleteAdminActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        LoginForm loginForm=new LoginForm();
+        
+        loginForm.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void viewAdminListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewAdminListActionPerformed
+        // TODO add your handling code here:
+        
+        ViewAllAdmins viewAdmins=new ViewAllAdmins();
+        
+        viewAdmins.setVisible(true);
+    }//GEN-LAST:event_viewAdminListActionPerformed
+
+    private void payslipHistoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_payslipHistoryActionPerformed
+        // TODO add your handling code here:
+            PayHistory payHistory=new PayHistory();
+            
+            payHistory.setVisible(true);
+            this.dispose();
+    }//GEN-LAST:event_payslipHistoryActionPerformed
 
     /**
      * @param args the command line arguments
@@ -182,17 +281,15 @@ public class AdminDashboard extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton CompanySettings;
     private javax.swing.JButton deleteAdmin;
-    private javax.swing.JButton deleteAdmin1;
     private javax.swing.JButton deleteEmployee;
-    private javax.swing.JButton exitButton;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JButton payslipHistory;
     private javax.swing.JButton registerAdmin;
     private javax.swing.JButton registerEmployee;
-    private javax.swing.JButton viewAllAdmins;
-    private javax.swing.JButton viewAllEmployees;
+    private javax.swing.JButton viewAdminList;
+    private javax.swing.JButton viewEmployeeList;
     // End of variables declaration//GEN-END:variables
 }

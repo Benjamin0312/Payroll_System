@@ -3,7 +3,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package UI;
+import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
+import Model.*;
+import Services.*;
+import java.sql.SQLException;
+import java.time.LocalDate;
 
 /**
  *
@@ -14,8 +19,13 @@ public class EmployeeDashboard extends javax.swing.JFrame {
     /**
      * Creates new form EmployeeInterface
      */
-    public EmployeeDashboard() {
+    
+    private Employee employee;
+    
+    
+    public EmployeeDashboard(Employee employee) {
         initComponents();
+        this.employee=employee;
     }
 
     /**
@@ -29,13 +39,12 @@ public class EmployeeDashboard extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        overtimeHours = new javax.swing.JPasswordField();
-        hoursWorked = new javax.swing.JTextField();
+        hoursWorkedField = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        computationButton = new javax.swing.JButton();
-        exitButton = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        generatePayslip = new javax.swing.JButton();
+        back = new javax.swing.JButton();
+        overtimeHoursField = new javax.swing.JTextField();
+        changePassword = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -43,38 +52,35 @@ public class EmployeeDashboard extends javax.swing.JFrame {
 
         jLabel2.setText("Overtime Hours :");
 
-        overtimeHours.addActionListener(new java.awt.event.ActionListener() {
+        hoursWorkedField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                overtimeHoursActionPerformed(evt);
+                hoursWorkedFieldActionPerformed(evt);
             }
         });
 
-        hoursWorked.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                hoursWorkedActionPerformed(evt);
-            }
-        });
-
-        jLabel3.setFont(new java.awt.Font("Dialog", 1, 20)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("DialogInput", 1, 24)); // NOI18N
         jLabel3.setText("EMPLOYEES DASHBOARD");
 
-        computationButton.setText("COMPUTE RESULTS");
-        computationButton.addActionListener(new java.awt.event.ActionListener() {
+        generatePayslip.setText("Generate Payslip");
+        generatePayslip.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                computationButtonActionPerformed(evt);
+                generatePayslipActionPerformed(evt);
             }
         });
 
-        exitButton.setText("EXIT");
-        exitButton.addActionListener(new java.awt.event.ActionListener() {
+        back.setText("BACK");
+        back.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exitButtonActionPerformed(evt);
+                backActionPerformed(evt);
             }
         });
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        changePassword.setText("Change Password");
+        changePassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                changePasswordActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -83,105 +89,162 @@ public class EmployeeDashboard extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(171, 171, 171)
-                        .addComponent(jLabel3))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(18, 18, 18)
-                                        .addComponent(exitButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addContainerGap()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addComponent(hoursWorked, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(overtimeHours, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                                .addGap(12, 12, 12))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(computationButton, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(41, 41, 41)))
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 467, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(27, Short.MAX_VALUE))
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(hoursWorkedField, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(overtimeHoursField))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(46, 46, 46)
+                        .addComponent(jLabel3)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(generatePayslip, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(86, 86, 86))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(back, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(changePassword))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(29, 29, 29)
+                .addGap(28, 28, 28)
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(17, 17, 17)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(40, 40, 40)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(hoursWorked, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel2)
-                            .addComponent(overtimeHours, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(86, 86, 86)
-                        .addComponent(computationButton, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(exitButton)
-                        .addGap(21, 21, 21))))
+                .addGap(41, 41, 41)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(hoursWorkedField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(overtimeHoursField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(generatePayslip, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(back)
+                    .addComponent(changePassword))
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void hoursWorkedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hoursWorkedActionPerformed
+    private void hoursWorkedFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hoursWorkedFieldActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_hoursWorkedActionPerformed
+    }//GEN-LAST:event_hoursWorkedFieldActionPerformed
 
-    private void computationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_computationButtonActionPerformed
+    private void generatePayslipActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generatePayslipActionPerformed
         // TODO add your handling code here:
-
-        if(hoursWorked.getText().isBlank()){
-            JOptionPane.showMessageDialog(null,"Please enter your Username");
-            hoursWorked.requestFocusInWindow();
-        }else if(!hoursWorked.getText().equals("to be changed@benjy")){
-            JOptionPane.showMessageDialog(null, "Incorrect Username, try again");
-            hoursWorked.setText("");
-            hoursWorked.requestFocusInWindow();
-        }else if(overtimeHours.getText().isBlank()){
-            JOptionPane.showMessageDialog(null,"Please enter your password");
-            overtimeHours.requestFocusInWindow();
-        }else if(!overtimeHours.getText().equals("to be changed@benjy")){
-            JOptionPane.showMessageDialog(null, "Incorrect Password, try again");
-            overtimeHours.setText("");
-            overtimeHours.requestFocusInWindow();
+        Pattern numberPattern = Pattern.compile("^\\d+(\\.\\d{1,2})?$");
+        
+        
+        if(employee==null){
+         JOptionPane.showMessageDialog(this, "Session expired. Please log in again.");
+           new LoginForm().setVisible(true);
+         dispose();
+          return;
         }
-    }//GEN-LAST:event_computationButtonActionPerformed
+        else if(hoursWorkedField.getText().isBlank()){
+            JOptionPane.showMessageDialog(null,"Please enter your hours worked");
+            hoursWorkedField.requestFocusInWindow();
+            return;
+        }
+        else if(!numberPattern.matcher(hoursWorkedField.getText()).matches()){
+            JOptionPane.showMessageDialog(null, "Please enter valid numerical values only");
+            hoursWorkedField.setText("");
+            hoursWorkedField.requestFocusInWindow();
+            return;
+        }
+        else if(overtimeHoursField.getText().isBlank()){
+            JOptionPane.showMessageDialog(null,"Please enter overtime hours");
+            overtimeHoursField.requestFocusInWindow();
+        }
+        else if(!numberPattern.matcher(overtimeHoursField.getText()).matches()){
+            JOptionPane.showMessageDialog(null, "Please enter valid numerical values only");
+            overtimeHoursField.setText("");
+            overtimeHoursField.requestFocusInWindow();
+            return;
+        }
+        else{
+            
+            Payroll payroll=new Payroll();
+            double hoursWorked=Double.parseDouble(hoursWorkedField.getText().trim());
+            double overtimeHours=Double.parseDouble(overtimeHoursField.getText().trim());
+            
+            payroll.setHoursWorked(hoursWorked);
+            payroll.setOvertimeHours(overtimeHours);
+            
+             JobRoleService roleService=new JobRoleService();
+             
+            LocalDate currentDate=LocalDate.now();
+          
+       
+          try{
+              
+            ///  System.out.println("DEBUG: employee jobRoleId = " + employee.getJobRoleId());
 
-    private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
-        // TODO add your handling code here:
-        System.exit(1);
-    }//GEN-LAST:event_exitButtonActionPerformed
+            JobRole role=roleService.getJobRoleRates(employee.getJobRoleId());
+       
+          //Payroll payroll=new Payroll(role.getHourlyRate(),role.getOvertimeRate());
+          /// CompanyInfo companyInfo=new CompanyInfo();
+           
+           /*   if(role==null){
+                  JOptionPane.showMessageDialog(this,"Job role rates not found","Error",JOptionPane.ERROR_MESSAGE);
+                 
+              return;
+          }*/
+              
+                    roleService.generatePayslip(employee, role, payroll);
+                    
+                    System.out.println("Saving payroll for employee: " + employee.getID());
 
-    private void overtimeHoursActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_overtimeHoursActionPerformed
+                    roleService.savePayroll(employee, payroll, currentDate.getMonth().toString(), role);
+                  
+        }
+        catch(SQLException e){
+            JOptionPane.showMessageDialog(null,"Database Error:"+e.getMessage());
+        }
+          
+     
+        }
+      
+    }//GEN-LAST:event_generatePayslipActionPerformed
+
+    private void backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_overtimeHoursActionPerformed
+      LoginForm login=new LoginForm();
+      
+      login.setVisible(true);
+      this.dispose();
+    }//GEN-LAST:event_backActionPerformed
+
+    private void changePasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changePasswordActionPerformed
+        // TODO add your handling code here:
+        EmployeePassword employeePassword=new EmployeePassword();
+        
+        employeePassword.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_changePasswordActionPerformed
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+  /*  public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
-        try {
+       /* try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
@@ -196,27 +259,26 @@ public class EmployeeDashboard extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(EmployeeDashboard.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(EmployeeDashboard.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
+        }*/
         //</editor-fold>
         //</editor-fold>
 
-        /* Create and display the form */
+        /* Create and display the form 
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new EmployeeDashboard().setVisible(true);
             }
         });
-    }
+    }*/
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton computationButton;
-    private javax.swing.JButton exitButton;
-    private javax.swing.JTextField hoursWorked;
+    private javax.swing.JButton back;
+    private javax.swing.JButton changePassword;
+    private javax.swing.JButton generatePayslip;
+    private javax.swing.JTextField hoursWorkedField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JPasswordField overtimeHours;
+    private javax.swing.JTextField overtimeHoursField;
     // End of variables declaration//GEN-END:variables
 }
