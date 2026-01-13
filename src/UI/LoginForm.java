@@ -5,13 +5,39 @@
 package UI;
 import javax.swing.JOptionPane;
 import Services.*;
+import Model.*;
+import java.sql.SQLException;
 
 /**
  *
  * @author benji
  */
 public class LoginForm extends javax.swing.JFrame {
+    
+    
+    private String userName;
+    private String password;   
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public LoginForm(String userName, String password) {
+        this.userName = userName;
+        this.password = password;
+    }
     /**
      * Creates new form LoginForm
      */
@@ -31,13 +57,13 @@ public class LoginForm extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        password = new javax.swing.JPasswordField();
+        pasword = new javax.swing.JPasswordField();
         username = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         loginButton = new javax.swing.JButton();
         exitButton = new javax.swing.JButton();
         passwordVisibility = new javax.swing.JCheckBox();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        loginRole = new javax.swing.JComboBox<>();
         jLabel4 = new javax.swing.JLabel();
 
         jButton2.setText("LOGIN");
@@ -83,7 +109,7 @@ public class LoginForm extends javax.swing.JFrame {
             }
         });
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PLEASE SELECT", "ADMINISTRATOR", "EMPLOYEE" }));
+        loginRole.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PLEASE SELECT", "ADMINISTRATOR", "EMPLOYEE" }));
 
         jLabel4.setText("LOGIN AS:");
 
@@ -101,9 +127,9 @@ public class LoginForm extends javax.swing.JFrame {
                     .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(loginRole, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(username)
-                    .addComponent(password))
+                    .addComponent(pasword))
                 .addGap(115, 115, 115))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -129,7 +155,7 @@ public class LoginForm extends javax.swing.JFrame {
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(loginRole, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -138,7 +164,7 @@ public class LoginForm extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(pasword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(passwordVisibility)
                 .addGap(18, 18, 18)
@@ -158,21 +184,70 @@ public class LoginForm extends javax.swing.JFrame {
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
         // TODO add your handling code here:
         
-        if(username.getText().isBlank()){
+      
+        if(loginRole.getSelectedIndex()==0){
+             JOptionPane.showMessageDialog(null,"Please Select your login role");
+            return;
+        }
+        else if(username.getText().isBlank()){
             JOptionPane.showMessageDialog(null,"Please enter your Username");
             username.requestFocusInWindow();
-        }else if(!username.getText().equals("to be changed@benjy")){
-        JOptionPane.showMessageDialog(null, "Incorrect Username, try again");
-        username.setText("");
-        username.requestFocusInWindow();
-        }else if(password.getText().isBlank()){
-              JOptionPane.showMessageDialog(null,"Please enter your password");
-               password.requestFocusInWindow();
-        }else if(!password.getText().equals("to be changed@benjy")){
-        JOptionPane.showMessageDialog(null, "Incorrect Password, try again");
-        password.setText("");
-        password.requestFocusInWindow();
+            return;
         }
+        else if(pasword.getText().isBlank()){
+        JOptionPane.showMessageDialog(null, "Please enter password");
+        pasword.requestFocusInWindow();
+        return;
+        }
+        
+        else{
+            
+           EmployeeService empService=new EmployeeService();
+             
+             AdminService adminService=new AdminService();
+            
+             setUserName(username.getText().trim());
+            setPassword(adminService.hashPassword(pasword.getText().trim()));
+           
+            
+            
+         try{   
+             
+        
+             Employee loggedInEmp=empService.login(userName,password);
+              
+             
+            if(loginRole.getSelectedIndex()==1){
+                
+                if(!adminService.adminLogin(userName, password)){
+                    JOptionPane.showMessageDialog(this,"Incorrect username or password","Login Failed",JOptionPane.ERROR_MESSAGE);
+              
+                }else{
+                
+                 AdminDashboard adminDashboard=new AdminDashboard();
+                adminDashboard.setVisible(true);
+                this.dispose();
+                
+                }
+                
+                
+            }else{
+                
+                if(loggedInEmp==null){
+                    JOptionPane.showMessageDialog(this, "Invalid username or password","Login Failed",JOptionPane.ERROR_MESSAGE);
+                  return;
+                }
+                new EmployeeDashboard(loggedInEmp).setVisible(true);
+                  this.dispose();
+
+            }
+         }catch(SQLException e){
+                JOptionPane.showMessageDialog(null, "Database error"+e.getMessage());
+                e.printStackTrace();
+            }
+            
+        }
+       
     }//GEN-LAST:event_loginButtonActionPerformed
 
     private void usernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameActionPerformed
@@ -187,9 +262,9 @@ public class LoginForm extends javax.swing.JFrame {
     private void passwordVisibilityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordVisibilityActionPerformed
         // TODO add your handling code here:
         if(passwordVisibility.isSelected()){
-            password.setEchoChar((char)0);
+            pasword.setEchoChar((char)0);
         }else
-            password.setEchoChar('*');
+            pasword.setEchoChar('*');
     }//GEN-LAST:event_passwordVisibilityActionPerformed
 
     /**
@@ -230,14 +305,14 @@ public class LoginForm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton exitButton;
     private javax.swing.JButton jButton2;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JButton loginButton;
-    private javax.swing.JPasswordField password;
+    private javax.swing.JComboBox<String> loginRole;
     private javax.swing.JCheckBox passwordVisibility;
+    private javax.swing.JPasswordField pasword;
     private javax.swing.JTextField username;
     // End of variables declaration//GEN-END:variables
 }
