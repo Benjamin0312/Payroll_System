@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package Services;
+import Model.*;
 
 /**
  *
@@ -29,17 +30,24 @@ public class EmployeeService {
       e.printStackTrace();
     }
   }
+  
+  
+ 
+  
+ 
+  
     public void registerEmployee(Employee emp) throws SQLException{
       
-  String sql ="INSERT INTO employees(name,surname,jobTitle, department,password) VALUES(?,?,?,?,?)";
+  String sql ="INSERT INTO employees(job_role_id,name,surname,jobTitle, department,password) VALUES(?,?,?,?,?,?)";
         
        PreparedStatement ps=conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
       
-       ps.setString(1,emp.getName());
-       ps.setString(2, emp.getSurname());
-       ps.setString(3,emp.getJobTitle());
-       ps.setString(4,emp.getDepartment());
-       ps.setString(5,emp.getPassword());
+       ps.setInt(1,emp.getJobRoleId());
+       ps.setString(2,emp.getName());
+       ps.setString(3, emp.getSurname());
+       ps.setString(4,emp.getJobTitle());
+       ps.setString(5,emp.getDepartment());
+       ps.setString(6,emp.getPassword());
        ps.executeUpdate();
        
        ResultSet rs=ps.getGeneratedKeys();
@@ -52,7 +60,10 @@ public class EmployeeService {
        
        int id=rs.getInt(1);
        
-       String employeeCode="EMP"+String.format("%04d", id);
+        CompanyServices service = new CompanyServices();
+      CompanyInfo companyInfo = service.getCompanyInfo();
+       
+       String employeeCode=companyInfo.getCompanyCode()+String.format("%04d", id);
         
        String updateID="UPDATE employees SET employee_id=? where id=?";
        PreparedStatement ps2=conn.prepareStatement(updateID);
@@ -123,27 +134,30 @@ public class EmployeeService {
     public Employee login(String username, String password) throws SQLException {
     String sql = "SELECT * FROM employees WHERE employee_id=? AND password=?";
     PreparedStatement ps = conn.prepareStatement(sql);
-    
     ps.setString(1, username);
     ps.setString(2, password);
-
-    ResultSet rs = ps.executeQuery();
-
-    if (rs.next()) {
+  ResultSet rs = ps.executeQuery();
+  if (rs.next()) {
         Employee emp = new Employee();
         emp.setID(rs.getString("employee_id"));
+        emp.setJobRoleId(rs.getInt("job_role_id"));
         emp.setName(rs.getString("name"));
-   
-        return emp;
+        emp.setSurname(rs.getString("surname"));
+        emp.setJobTitle(rs.getString("jobTitle"));
+        emp.setDepartment(rs.getString("department"));
+      return emp;
     }
     return null;
 }
+  
     
     public String createPassword(String name,String surname){
         
         
         return name+surname.toLowerCase();
     }
+    
+    
     
 public void changePassword(String employeeId, String oldPassword, String newPassword) throws SQLException {
 
