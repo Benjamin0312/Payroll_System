@@ -1,0 +1,100 @@
+## System Requirements & Setup
+
+This application depends on an external MySQL database and will not run without proper configuration.
+
+### Requirements
+- Java JDK 17+
+- MySQL Server 8+
+- NetBeans IDE (recommended)
+
+### Database Setup
+1. Create a MySQL database named:
+   payroll_system
+2. Execute the provided SQL scripts to create tables and relationships.
+3.create a file named DBConfig.java inside a package named Config which you must also create and populate it with your local MySQL username and password.
+    e.g Config--->Package
+             |
+             -->DBConfig.java
+                    public class DBConfig {
+    
+              public static final String URL="jdbc:mysql://localhost:3306/payroll_system?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";(host me can change)
+              public static final String USER="root";(leave as is)
+              public static final String PASSWORD="Your database password";}
+                      
+PLEASE NOTE: The application is designed to run in an environment where the database schema is pre-configured.
+
+***RUN THE FOLLOWING SQL SCRIPTS using MYSQL 8.0 command line
+
+CREATE TABLE admins (
+    admin_id INT NOT NULL AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    must_reset_password TINYINT DEFAULT 1,
+    PRIMARY KEY (admin_id)
+);
+
+
+CREATE TABLE company_info (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    company_name VARCHAR(100) NOT NULL,
+    company_code VARCHAR(20) NOT NULL UNIQUE,
+    tax_number VARCHAR(50) NOT NULL,
+    registration_number VARCHAR(50) NOT NULL
+);
+
+
+CREATE TABLE job_roles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    role_name VARCHAR(50) NOT NULL,
+    department VARCHAR(50) NOT NULL,
+    hourly_rate DECIMAL(10,2) NOT NULL,
+    overtime_rate DECIMAL(10,2) NOT NULL
+);
+
+CREATE TABLE employees (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_id VARCHAR(20) UNIQUE,
+    job_role_id INT NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    surname VARCHAR(50) NOT NULL,
+    jobTitle VARCHAR(50) NOT NULL,
+    department VARCHAR(50) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+   
+
+    CONSTRAINT fk_employee_jobrole
+        FOREIGN KEY (job_role_id)
+        REFERENCES job_roles(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+);
+
+
+CREATE TABLE payroll (
+    payroll_id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_id VARCHAR(20) NOT NULL,
+    pay_period VARCHAR(20) NOT NULL,
+    hours_worked DECIMAL(6,2) NOT NULL,
+    overtime_hours DECIMAL(6,2) NOT NULL,
+    basic_salary DECIMAL(10,2) NOT NULL,
+    overtime_pay DECIMAL(10,2) NOT NULL,
+    tax DECIMAL(10,2) NOT NULL,
+    uif DECIMAL(10,2) NOT NULL,
+    net_pay DECIMAL(10,2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_payroll_employee
+        FOREIGN KEY (employee_id)
+        REFERENCES employees(employee_id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+
+
+
+
+
+
+
