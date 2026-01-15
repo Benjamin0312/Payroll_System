@@ -10,4 +10,10 @@ package Config;
  */
 public class DBConfig {
     
+    public static final String URL="jdbc:mysql://localhost:3306/payroll_system?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+    
+    public static final String USER="root";
+    
+    public static final String PASSWORD="2003B@njamin";
+    
 }

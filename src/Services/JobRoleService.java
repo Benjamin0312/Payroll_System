@@ -22,6 +22,7 @@ import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.util.Matrix;
 import java.io.IOException;
 import java.time.LocalDate;
+import org.apache.pdfbox.pdmodel.font.PDFont;
 
 
 /**
@@ -232,7 +233,7 @@ public void generatePayslip(Employee employee,JobRole jobRole,Payroll payroll){
          cs.setTextMatrix(Matrix.getRotateInstance(Math.toRadians(45),200,300));
          ///water mark text
          cs.showText("PAYSLIP");
-         ///end of the water mark
+         //end of the water mark
          cs.endText();
          
         
@@ -265,9 +266,21 @@ public void generatePayslip(Employee employee,JobRole jobRole,Payroll payroll){
         ///end of text
          cs.endText();
          
+        // cs.beginText();
+        // cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD),33);
+         //cs.newLineAtOffset(200,740);
+         ///cs.showText(companyInfo.getCompanyName());
+         ///cs.endText();
+         /////////PDPage page=document.getPage(0);
+         
+         PDFont font=new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
+         float textWidth=font.getStringWidth(companyInfo.getCompanyName())/1000f*33;
+         float pageWidth=page.getMediaBox().getWidth();
+         float x=(pageWidth-textWidth)/2;
+          
          cs.beginText();
-         cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD),33);
-         cs.newLineAtOffset(200,740);
+         cs.setFont(font,33);
+         cs.newLineAtOffset(x,740);
          cs.showText(companyInfo.getCompanyName());
          cs.endText();
          

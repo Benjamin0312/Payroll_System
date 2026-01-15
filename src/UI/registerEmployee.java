@@ -4,19 +4,40 @@
  */
 package UI;
 import javax.swing.JOptionPane;
+import Services.*;
+import Model.*;
+import java.sql.SQLException;
 
 /**
  *
  * @author benji
  */
-public class registerEmployee extends javax.swing.JFrame {
+public class RegisterEmployee extends javax.swing.JFrame {
+    
+    String department;
+
+    public RegisterEmployee(String department) {
+        this.department = department;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
 
     /**
      * Creates new form registerEmployee
      */
-    public registerEmployee() {
+    public RegisterEmployee() {
         initComponents();
+       departmentField.setEditable(false);
+        loadJobRoles();
     }
+    
+  
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -27,22 +48,22 @@ public class registerEmployee extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         surname = new javax.swing.JLabel();
         employeeName = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        reigisterEmployee = new javax.swing.JButton();
-        exitButton = new javax.swing.JButton();
-        department = new javax.swing.JComboBox<>();
+        registerEmployee = new javax.swing.JButton();
+        jobRole = new javax.swing.JComboBox<>();
         surname1 = new javax.swing.JLabel();
         backButton = new javax.swing.JButton();
         employeeSurname = new javax.swing.JTextField();
-        jobTitle = new javax.swing.JTextField();
+        departmentField = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+
+        jLabel5.setText("jLabel5");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jLabel4.setText("DEPARTMENT:");
 
         jLabel1.setText("NAME:");
 
@@ -57,23 +78,20 @@ public class registerEmployee extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Dialog", 1, 20)); // NOI18N
         jLabel3.setText("REGISTER EMPLOYEE");
 
-        reigisterEmployee.setText("REGISTER EMPLOYEE");
-        reigisterEmployee.addActionListener(new java.awt.event.ActionListener() {
+        registerEmployee.setText("REGISTER EMPLOYEE");
+        registerEmployee.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                reigisterEmployeeActionPerformed(evt);
+                registerEmployeeActionPerformed(evt);
             }
         });
 
-        exitButton.setText("EXIT");
-        exitButton.addActionListener(new java.awt.event.ActionListener() {
+        jobRole.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exitButtonActionPerformed(evt);
+                jobRoleActionPerformed(evt);
             }
         });
 
-        department.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PLEASE SELECT", "ADMINISTRATOR", "EMPLOYEE" }));
-
-        surname1.setText("Job Title:");
+        surname1.setText("Department:");
 
         backButton.setText("BACK");
         backButton.addActionListener(new java.awt.event.ActionListener() {
@@ -88,59 +106,55 @@ public class registerEmployee extends javax.swing.JFrame {
             }
         });
 
+        jLabel2.setText("Job Role:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(84, 84, 84)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(12, 12, 12)
+                        .addComponent(surname1, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(surname, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(6, 6, 6)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(departmentField, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jobRole, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(88, 88, 88))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(backButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel3)
-                .addGap(88, 88, 88))
+                .addContainerGap(109, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addGap(88, 88, 88))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(registerEmployee, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(104, 104, 104))))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(98, 98, 98)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(employeeSurname, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
+                            .addComponent(employeeName)))
+                    .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(exitButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(84, 84, 84)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(surname1, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jobTitle))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(surname, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addGap(21, 21, 21)
-                                            .addComponent(employeeName, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                            .addComponent(employeeSurname, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(department, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(113, 113, 113)
-                        .addComponent(reigisterEmployee, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(backButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(29, 29, 29)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(backButton)))
+                .addGap(29, 29, 29)
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
@@ -151,59 +165,124 @@ public class registerEmployee extends javax.swing.JFrame {
                     .addComponent(employeeSurname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(department, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
+                    .addComponent(jobRole, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(surname1)
-                    .addComponent(jobTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(departmentField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(reigisterEmployee, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
-                .addComponent(exitButton)
-                .addContainerGap())
+                .addComponent(registerEmployee, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
+                .addComponent(backButton)
+                .addGap(27, 27, 27))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    
     private void employeeNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_employeeNameActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_employeeNameActionPerformed
 
-    private void reigisterEmployeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reigisterEmployeeActionPerformed
+    
+    private void registerEmployeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerEmployeeActionPerformed
         // TODO add your handling code here:
-
-        if(employeeName.getText().isBlank()){
+  
+   JobRole selectedRole=(JobRole) jobRole.getSelectedItem();
+   
+   EmployeeService employeeService=new EmployeeService();
+   
+   AdminService adminService=new AdminService();
+   
+   Employee emp=new Employee();
+         
+   if(employeeName.getText().isBlank()){
             JOptionPane.showMessageDialog(null,"Please enter Employee name");
             employeeName.requestFocusInWindow();
+            return;
         }
         else if(employeeSurname.getText().isBlank()){
             JOptionPane.showMessageDialog(null,"Please enter Employee surname");
             employeeSurname.requestFocusInWindow();
-        }else if(department.getSelectedItem().equals("PLEASE SELECT")){
-            JOptionPane.showMessageDialog(null,"Please Select Employee department");
-            
-        }else if(jobTitle.getText().isBlank()){
-            JOptionPane.showMessageDialog(null,"Please enter Employee job title");
-        }else{
-            JOptionPane.showMessageDialog(null, "Employee has been registered");
+            return;
         }
+        
+        else if(selectedRole==null){
+            JOptionPane.showMessageDialog(this,"Please select a job role");
+            return;
+        }
+        else{
+           
+         setDepartment(selectedRole.getDepartment());
             
-    }//GEN-LAST:event_reigisterEmployeeActionPerformed
-
-    private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
-        // TODO add your handling code here:
-        System.exit(1);
-    }//GEN-LAST:event_exitButtonActionPerformed
-
+          String temporaryPassword=(employeeSurname.getText().trim()+"@"+department).toLowerCase();
+            
+          emp.setName(employeeName.getText().trim());
+          emp.setSurname(employeeSurname.getText().trim());
+          emp.setJobTitle(selectedRole.getRoleName());
+          emp.setDepartment(department);
+          emp.setJobRoleId(selectedRole.getJobRoleId());
+          emp.setPassword(adminService.hashPassword(temporaryPassword));
+          
+            try {
+                employeeService.registerEmployee(emp);
+                
+                JOptionPane.showMessageDialog(this, "Employee succesfully registered");
+            } catch (SQLException e) {
+                e.printStackTrace();
+               JOptionPane.showMessageDialog(null,"Database Error:"+e.getMessage());
+               
+            }
+         
+        }
+        
+            
+    }//GEN-LAST:event_registerEmployeeActionPerformed
+     
+    private void loadJobRoles(){
+         try{
+             JobRoleService  jobRoleService=new JobRoleService();
+             
+             jobRole.removeAllItems();
+             
+             
+                 for(JobRole role:jobRoleService.getAllJobRoles()){
+                     jobRole.addItem(role);
+                 }
+             
+     }catch(SQLException e){
+    
+           JOptionPane.showMessageDialog(this,e.getMessage());
+     }
+         
+     }
     private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
         // TODO add your handling code here:
+        
+        AdminDashboard adminDashboard=new AdminDashboard();
+        
+        adminDashboard.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_backButtonActionPerformed
 
     private void employeeSurnameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_employeeSurnameActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_employeeSurnameActionPerformed
+
+    private void jobRoleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jobRoleActionPerformed
+        // TODO add your handling code here:
+       JobRole selectedRole=(JobRole) jobRole.getSelectedItem();
+        
+      if(selectedRole !=null){
+       departmentField.setText(selectedRole.getDepartment());
+        }
+        else{
+              departmentField.setText("");
+              }
+        
+    }//GEN-LAST:event_jobRoleActionPerformed
 
     /**
      * @param args the command line arguments
@@ -222,35 +301,36 @@ public class registerEmployee extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(registerEmployee.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RegisterEmployee.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(registerEmployee.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RegisterEmployee.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(registerEmployee.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RegisterEmployee.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(registerEmployee.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RegisterEmployee.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new registerEmployee().setVisible(true);
+                new RegisterEmployee().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton backButton;
-    private javax.swing.JComboBox<String> department;
+    private javax.swing.JTextField departmentField;
     private javax.swing.JTextField employeeName;
     private javax.swing.JTextField employeeSurname;
-    private javax.swing.JButton exitButton;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JTextField jobTitle;
-    private javax.swing.JButton reigisterEmployee;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JComboBox<Model.JobRole> jobRole;
+    private javax.swing.JButton registerEmployee;
     private javax.swing.JLabel surname;
     private javax.swing.JLabel surname1;
     // End of variables declaration//GEN-END:variables
