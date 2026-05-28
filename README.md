@@ -5,7 +5,12 @@
 Java Payroll Management System
 A Java-based payroll management system featuring employee management, salary calculation, payroll processing, and interactive Java Swing GUI functionality.
 
-#System Features
+# Payroll_System Features
+- Admin and employee authentication
+- Job role and salary management
+- Automated payroll calculation
+- PDF payslip generation
+- Payroll history tracking
 - Admin and employee authentication
 - Job role and salary management
 - Automated payroll calculation
